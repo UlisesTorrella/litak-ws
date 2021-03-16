@@ -2,7 +2,6 @@ package lila.ws
 
 import play.api.libs.json._
 import chess.format.{ FEN, Uci, UciCharPair }
-import chess.opening.{ FullOpening, FullOpeningDB }
 import chess.Pos
 import chess.variant.{ Crazyhouse, Variant }
 import com.typesafe.scalalogging.Logger
@@ -59,20 +58,9 @@ object Chess {
             if (sit.playable(false)) json.destString(sit.destinations) else ""
           }
         },
-        opening = {
-          if (Variant.openingSensibleVariants(req.variant)) FullOpeningDB findByFen req.fen
-          else None
-        },
         chapterId = req.chapterId
       )
     }
-
-  def apply(req: ClientOut.Opening): Option[ClientIn.Opening] =
-    if (Variant.openingSensibleVariants(req.variant))
-      FullOpeningDB findByFen req.fen map {
-        ClientIn.Opening(req.path, _)
-      }
-    else None
 
   private def makeNode(
       game: chess.Game,
@@ -90,10 +78,6 @@ object Chess {
       fen = fen,
       check = game.situation.check,
       dests = if (movable) game.situation.destinations else Map.empty,
-      opening =
-        if (game.turns <= 30 && Variant.openingSensibleVariants(game.board.variant))
-          FullOpeningDB findByFen fen
-        else None,
       drops = if (movable) game.situation.drops else Some(Nil),
       crazyData = game.situation.board.crazyData,
       chapterId = chapterId
@@ -109,12 +93,6 @@ object Chess {
     implicit val uciCharPairWrite = Writes[UciCharPair] { ucp => JsString(ucp.toString) }
     implicit val posWrite         = Writes[Pos] { pos => JsString(pos.key) }
     implicit val chapterIdWrite   = Writes[ChapterId] { ch => JsString(ch.value) }
-    implicit val openingWrite = Writes[FullOpening] { o =>
-      Json.obj(
-        "eco"  -> o.eco,
-        "name" -> o.name
-      )
-    }
     implicit val destsJsonWriter: Writes[Map[Pos, List[Pos]]] = Writes { dests =>
       JsString(destString(dests))
     }

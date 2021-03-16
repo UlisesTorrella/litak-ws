@@ -19,7 +19,7 @@ libraryDependencies += "io.lettuce"                  % "lettuce-core"           
 libraryDependencies += "io.netty"                    % "netty-handler"                % nettyVersion
 libraryDependencies += "io.netty"                    % "netty-codec-http"             % nettyVersion
 libraryDependencies += "io.netty"                    % "netty-transport-native-epoll" % nettyVersion classifier "linux-x86_64"
-libraryDependencies += "org.lichess"                %% "scalachess"                   % "10.2.0"
+libraryDependencies += "com.github.ornicar"         %% "scalalib"                     % "7.0.2"
 libraryDependencies += "com.typesafe.akka"          %% "akka-actor-typed"             % akkaVersion
 libraryDependencies += "com.typesafe.akka"          %% "akka-slf4j"                   % akkaVersion
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"                % "3.9.2"
@@ -32,6 +32,8 @@ libraryDependencies += "io.kamon"                   %% "kamon-influxdb"         
 libraryDependencies += "io.kamon"                   %% "kamon-system-metrics"         % kamonVersion
 libraryDependencies += "com.softwaremill.macwire"   %% "macros"                       % "2.3.7" % "provided"
 libraryDependencies += "com.roundeights"            %% "hasher"                       % "1.2.1"
+libraryDependencies += "org.uaparser"               %% "uap-scala"                    % "0.11.0"
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 resolvers += "lila-maven" at "https://raw.githubusercontent.com/ornicar/lila-maven/master"

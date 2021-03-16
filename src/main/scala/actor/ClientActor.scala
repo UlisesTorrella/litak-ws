@@ -86,10 +86,6 @@ object ClientActor {
         req.userId foreach { services.friends.start(_, clientIn) }
         state
 
-      case opening: ClientOut.Opening =>
-        Chess(opening) foreach clientIn
-        state
-
       case anaMove: ClientOut.AnaMove =>
         clientIn(Chess(anaMove))
         state

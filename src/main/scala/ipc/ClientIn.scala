@@ -3,7 +3,6 @@ package ipc
 
 import chess.Color
 import chess.format.UciCharPair
-import chess.opening.FullOpening
 import chess.variant.Crazyhouse
 import lila.ws.Position
 import lila.ws.util.LilaJsObject.augment
@@ -120,17 +119,6 @@ object ClientIn {
 
   def tvSelect(data: JsonString) = payload("tvSelect", data)
 
-  case class Opening(path: Path, opening: FullOpening) extends ClientIn {
-    def write =
-      cliMsg(
-        "opening",
-        Json.obj(
-          "path"    -> path,
-          "opening" -> opening
-        )
-      )
-  }
-
   case object StepFailure extends ClientIn {
     def write = cliMsg("stepFailure")
   }
@@ -143,7 +131,6 @@ object ClientIn {
       fen: chess.format.FEN,
       check: Boolean,
       dests: Map[chess.Pos, List[chess.Pos]],
-      opening: Option[chess.opening.FullOpening],
       drops: Option[List[chess.Pos]],
       crazyData: Option[Crazyhouse.Data],
       chapterId: Option[ChapterId]
@@ -164,7 +151,6 @@ object ClientIn {
                 "dests"    -> dests,
                 "children" -> JsArray()
               )
-              .add("opening" -> opening)
               .add("check" -> check)
               .add("drops" -> drops.map { drops =>
                 JsString(drops.map(_.key).mkString)
@@ -178,7 +164,6 @@ object ClientIn {
   case class Dests(
       path: Path,
       dests: String,
-      opening: Option[chess.opening.FullOpening],
       chapterId: Option[ChapterId]
   ) extends ClientIn {
     def write =
@@ -189,7 +174,6 @@ object ClientIn {
             "dests" -> dests,
             "path"  -> path
           )
-          .add("opening" -> opening)
           .add("ch" -> chapterId)
       )
   }

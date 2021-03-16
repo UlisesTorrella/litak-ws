@@ -28,8 +28,6 @@ object ClientOut {
 
   case object FollowingOnline extends ClientOutSite
 
-  case class Opening(variant: Variant, path: Path, fen: FEN) extends ClientOutSite
-
   case class AnaMove(
       orig: Pos,
       dest: Pos,
@@ -127,13 +125,6 @@ object ClientOut {
             case "moveLat"           => Some(MoveLat)
             case "notified"          => Some(Notified)
             case "following_onlines" => Some(FollowingOnline)
-            case "opening" =>
-              for {
-                d    <- o obj "d"
-                path <- d str "path"
-                fen  <- d str "fen"
-                variant = dataVariant(d)
-              } yield Opening(variant, Path(path), FEN(fen))
             case "anaMove" =>
               for {
                 d    <- o obj "d"
