@@ -12,19 +12,15 @@ case object Crazyhouse
       key = "crazyhouse",
       name = "Crazyhouse",
       shortName = "Crazy",
-      title = "Captured pieces can be dropped back on the board instead of moving a piece.",
+      title = "The goal of Tak is to be the first to connect two opposite edges of the board with pieces called stones, and create a road.",
       standardInitialPosition = true
     ) {
 
   def pieces = Standard.pieces
 
-  override val initialFen = FEN("8/8/8/8/8/8/8/8/ w - - 0 1")
+  override val initialFen = FEN("8/8/8/8/8/8/8/8/FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWffffffffffffffffffffffffffffffffffffffffffffffffffccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww w - - 0 1")
 
-  override def valid(board: Board, strict: Boolean) = {
-    val pieces = board.pieces.values
-    (Color.all forall validSide(board, false)) &&
-    (!strict || (pieces.count(_ is Pawn) <= 16 && pieces.sizeIs <= 32))
-  }
+  override def valid(board: Board, strict: Boolean) = true
 
   override def drop(situation: Situation, role: Role, pos: Pos): Validated[String, Drop] =
     for {
@@ -41,16 +37,15 @@ case object Crazyhouse
 
   override def fiftyMoves(history: History): Boolean = false
 
-  override def isIrreversible(move: Move): Boolean = move.castles
+  override def isIrreversible(move: Move): Boolean = false
 
-  override def finalizeBoard(board: Board, uci: Uci, capture: Option[Piece]): Board =
-    board
+  override def finalizeBoard(board: Board, uci: Uci): Board = board
 
   // Checkmate here means a path has been stablished
   override def checkmate(situation: Situation) = situation.board hasPath !situation.color
 
 
-  def canDropStuff(situation: Situation): Option[List[Pos]] =
+  override def canDropStuff(situation: Situation): Option[List[Pos]] =
     situation.board.crazyData match {
       case Some(data) => if (data.pockets(situation.color).roles.nonEmpty) Some(situation.board.emptySquares) else None
       case None => None

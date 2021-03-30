@@ -2,3 +2,11 @@ logs/
 target/
 project/metals.sbt
 project/project
+.sbtopts
+.bsp
+.bloop/
+.metals/
+project/.bloop/
+conf/application.conf
+conf/version.conf
+

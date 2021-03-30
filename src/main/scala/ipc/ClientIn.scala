@@ -3,7 +3,7 @@ package ipc
 
 import chess.Color
 import chess.format.UciCharPair
-import chess.variant.Crazyhouse
+import chess.variant.Standard
 import lila.ws.Position
 import lila.ws.util.LilaJsObject.augment
 import play.api.libs.json._
@@ -132,7 +132,7 @@ object ClientIn {
       check: Boolean,
       dests: Map[chess.Pos, List[chess.Pos]],
       drops: Option[List[chess.Pos]],
-      crazyData: Option[Crazyhouse.Data],
+      crazyData: Option[Standard.Data],
       chapterId: Option[ChapterId]
   ) extends ClientIn {
     def write =

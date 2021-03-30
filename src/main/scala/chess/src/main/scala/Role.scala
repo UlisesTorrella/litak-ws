@@ -11,6 +11,8 @@ sealed trait Role {
 }
 sealed trait PromotableRole extends Role
 
+trait Pathstone extends Role
+object Pathstone {}
 /** Promotable in antichess.
   */
 case object King extends PromotableRole {
@@ -21,17 +23,22 @@ case object King extends PromotableRole {
 }
 
 // Tak piece
-case object Flatstone extends Role {
+case object Flatstone extends Pathstone {
   val forsyth                 = 'f'
-  val dirs: Directions        = Queen.dirs
+  val dirs: Directions = List(
+    p => Pos.at(p.file.index - 1, p.rank.index),
+    p => Pos.at(p.file.index + 1, p.rank.index),
+    p => Pos.at(p.file.index, p.rank.index + 1),
+    p => Pos.at(p.file.index, p.rank.index - 1)
+  )
   def dir(from: Pos, to: Pos) = None
   val projection              = false
 }
 
 // Tak piece
-case object Capstone extends Role {
+case object Capstone extends Pathstone {
   val forsyth                 = 'c'
-  val dirs: Directions        = Queen.dirs
+  val dirs: Directions        = Flatstone.dirs
   def dir(from: Pos, to: Pos) = None
   val projection              = false
 }
@@ -39,7 +46,7 @@ case object Capstone extends Role {
 // Tak piece
 case object Wallstone extends Role {
   val forsyth                 = 'w'
-  val dirs: Directions        = Queen.dirs
+  val dirs: Directions        = Flatstone.dirs
   def dir(from: Pos, to: Pos) = None
   val projection              = false
 }

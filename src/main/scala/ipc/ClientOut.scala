@@ -35,7 +35,7 @@ object ClientOut {
       path: Path,
       variant: Variant,
       chapterId: Option[ChapterId],
-      promotion: Option[chess.PromotableRole],
+      stackIndex: Int,
       payload: JsObject
   ) extends ClientOutSite
 
@@ -134,8 +134,8 @@ object ClientOut {
                 fen  <- d str "fen"
                 variant   = dataVariant(d)
                 chapterId = d str "ch" map ChapterId.apply
-                promotion = d str "promotion" flatMap chess.Role.promotable
-              } yield AnaMove(orig, dest, FEN(fen), Path(path), variant, chapterId, promotion, o)
+                stackIndex = d int "stackIndex" getOrElse 0
+              } yield AnaMove(orig, dest, FEN(fen), Path(path), variant, chapterId, stackIndex toInt, o)
             case "anaDrop" =>
               for {
                 d    <- o obj "d"
@@ -236,8 +236,8 @@ object ClientOut {
     for {
       orig <- d str "from"
       dest <- d str "to"
-      prom = d str "promotion"
-      move <- Uci.Move.fromStrings(orig, dest, prom)
+      stackIndex = d int "stackIndex" getOrElse 0
+      move <- Uci.Move.fromStrings(orig, dest, stackIndex.toInt)
     } yield move
 
   private def parseMetrics(d: JsObject) =

@@ -3,7 +3,7 @@ package lila.ws
 import play.api.libs.json._
 import chess.format.{ FEN, Uci, UciCharPair }
 import chess.Pos
-import chess.variant.{ Crazyhouse, Variant }
+import chess.variant.{ Standard, Variant }
 import com.typesafe.scalalogging.Logger
 import cats.syntax.option._
 
@@ -17,7 +17,7 @@ object Chess {
     Monitor.time(_.chessMoveTime) {
       try {
         chess
-          .Game(req.variant.some, Some(req.fen))(req.orig, req.dest, req.promotion)
+          .Game(req.variant.some, Some(req.fen))(req.orig, req.dest, req.stackIndex)
           .toOption flatMap { case (game, move) =>
           game.pgnMoves.lastOption map { san =>
             makeNode(game, Uci.WithSan(Uci(move), san), req.path, req.chapterId)
@@ -108,14 +108,14 @@ object Chess {
       sb.toString
     }
 
-    implicit val crazyhousePocketWriter: OWrites[Crazyhouse.Pocket] = OWrites { v =>
+    implicit val crazyhousePocketWriter: OWrites[Standard.Pocket] = OWrites { v =>
       JsObject(
-        Crazyhouse.storableRoles.flatMap { role =>
+        Standard.storableRoles.flatMap { role =>
           Some(v.roles.count(role == _)).filter(0 < _).map { count => role.name -> JsNumber(count) }
         }
       )
     }
-    implicit val crazyhouseDataWriter: OWrites[chess.variant.Crazyhouse.Data] = OWrites { v =>
+    implicit val crazyhouseDataWriter: OWrites[chess.variant.Standard.Data] = OWrites { v =>
       Json.obj("pockets" -> List(v.pockets.white, v.pockets.black))
     }
   }
