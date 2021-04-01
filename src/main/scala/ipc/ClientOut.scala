@@ -8,6 +8,8 @@ import lila.ws.util.LilaJsObject.augment
 import play.api.libs.json._
 import scala.util.{ Success, Try }
 
+import chess.Direction.Direction
+
 sealed trait ClientOut extends ClientMsg
 
 sealed trait ClientOutSite  extends ClientOut
@@ -30,12 +32,13 @@ object ClientOut {
 
   case class AnaMove(
       orig: Pos,
-      dest: Pos,
+      dir: Direction,
+      index: Int,
+      drops: List[Int],
       fen: FEN,
       path: Path,
       variant: Variant,
       chapterId: Option[ChapterId],
-      stackIndex: Int,
       payload: JsObject
   ) extends ClientOutSite
 
@@ -127,15 +130,24 @@ object ClientOut {
             case "following_onlines" => Some(FollowingOnline)
             case "anaMove" =>
               for {
-                d    <- o obj "d"
-                orig <- d str "orig" flatMap Pos.fromKey
-                dest <- d str "dest" flatMap Pos.fromKey
-                path <- d str "path"
-                fen  <- d str "fen"
+                d     <- o obj "d"
+                orig  <- d str "orig" flatMap Pos.fromKey
+                dir   <- d str "dir"
+                index  = d int "index" getOrElse 0
+                drops <- d str "drops"
+                path  <- d str "path"
+                fen   <- d str "fen"
                 variant   = dataVariant(d)
                 chapterId = d str "ch" map ChapterId.apply
-                stackIndex = d int "stackIndex" getOrElse 0
-              } yield AnaMove(orig, dest, FEN(fen), Path(path), variant, chapterId, stackIndex toInt, o)
+              } yield AnaMove(orig,
+                              chess.Direction(dir),
+                              index.toInt,
+                              drops.map(_.toInt - 48).toList,
+                              FEN(fen),
+                              Path(path),
+                              variant,
+                              chapterId,
+                              o)
             case "anaDrop" =>
               for {
                 d    <- o obj "d"
@@ -236,8 +248,8 @@ object ClientOut {
     for {
       orig <- d str "from"
       dest <- d str "to"
-      stackIndex = d int "stackIndex" getOrElse 0
-      move <- Uci.Move.fromStrings(orig, dest, stackIndex.toInt)
+      index = d int "index" getOrElse 0
+      move <- Uci.Move.fromStrings(orig, dest, index.toInt)
     } yield move
 
   private def parseMetrics(d: JsObject) =

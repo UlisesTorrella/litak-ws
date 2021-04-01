@@ -17,7 +17,7 @@ object Chess {
     Monitor.time(_.chessMoveTime) {
       try {
         chess
-          .Game(req.variant.some, Some(req.fen))(req.orig, req.dest, req.stackIndex)
+          .Game(req.variant.some, Some(req.fen))(req.orig, req.dir, req.index, req.drops)
           .toOption flatMap { case (game, move) =>
           game.pgnMoves.lastOption map { san =>
             makeNode(game, Uci.WithSan(Uci(move), san), req.path, req.chapterId)
@@ -25,7 +25,7 @@ object Chess {
         } getOrElse ClientIn.StepFailure
       } catch {
         case e: java.lang.ArrayIndexOutOfBoundsException =>
-          logger.warn(s"${req.fen} ${req.variant} ${req.orig}${req.dest}", e)
+          logger.warn(s"${req.fen} ${req.variant} ${req.index}${req.orig}${req.dir}${req.drops.map(_.toString).mkString("")}", e)
           ClientIn.StepFailure
       }
     }
