@@ -133,7 +133,7 @@ object ClientOut {
                 d     <- o obj "d"
                 orig  <- d str "orig" flatMap Pos.fromKey
                 dir   <- d str "dir"
-                index  = d int "index" getOrElse 0
+                index  = d int "index" getOrElse 1
                 drops <- d str "drops"
                 path  <- d str "path"
                 fen   <- d str "fen"
@@ -246,10 +246,11 @@ object ClientOut {
 
   private def parseOldMove(d: JsObject) =
     for {
-      orig <- d str "from"
-      dest <- d str "to"
-      index = d int "index" getOrElse 0
-      move <- Uci.Move.fromStrings(orig, dest, index.toInt)
+      orig  <- d str "from"
+      dest  <- d str "to"
+      index =  d int "index" getOrElse 1
+      drops <- d str "drops"
+      move  <- Uci.Move.fromStrings(orig, dest, index.toInt, drops.map(_.toInt - 48).mkString(""))
     } yield move
 
   private def parseMetrics(d: JsObject) =
