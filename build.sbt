@@ -19,6 +19,7 @@ libraryDependencies += "io.lettuce"                  % "lettuce-core"           
 libraryDependencies += "io.netty"                    % "netty-handler"                % nettyVersion
 libraryDependencies += "io.netty"                    % "netty-codec-http"             % nettyVersion
 libraryDependencies += "io.netty"                    % "netty-transport-native-epoll" % nettyVersion classifier "linux-x86_64"
+libraryDependencies += "org.litak"                  %% "scalatak"                     % "0.1"
 libraryDependencies += "com.github.ornicar"         %% "scalalib"                     % "7.0.2"
 libraryDependencies += "com.typesafe.akka"          %% "akka-actor-typed"             % akkaVersion
 libraryDependencies += "com.typesafe.akka"          %% "akka-slf4j"                   % akkaVersion
@@ -37,6 +38,7 @@ libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % 
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 resolvers += "lila-maven" at "https://raw.githubusercontent.com/ornicar/lila-maven/master"
+resolvers += "lila-tak" at "https://raw.githubusercontent.com/UlisesTorrella/litakMaven/master"
 
 scalacOptions ++= Seq(
   "-explaintypes",
